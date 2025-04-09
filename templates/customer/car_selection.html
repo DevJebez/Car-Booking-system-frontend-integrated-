@@ -1,0 +1,140 @@
+<!-- templates/customer/car_selection.html -->
+{% extends 'base.html' %}
+
+{% block title %}Browse Cars - Car Booking System{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Browse Our Car Collection</h2>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Filters</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="brand-filter" class="form-label">Brand</label>
+                    <select class="form-select" id="brand-filter">
+                        <option value="">All Brands</option>
+                        {% for brand in brands %}
+                        <option value="{{ brand }}">{{ brand }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="min-price" class="form-label">Min Price</label>
+                    <input type="number" class="form-control" id="min-price" placeholder="Min Price">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="max-price" class="form-label">Max Price</label>
+                    <input type="number" class="form-control" id="max-price" placeholder="Max Price">
+                </div>
+                
+                <div class="mb-3">
+                    <label for="transmission" class="form-label">Transmission</label>
+                    <select class="form-select" id="transmission">
+                        <option value="all">All</option>
+                        <option value="Automatic">Automatic</option>
+                        <option value="Manual">Manual</option>
+                        <option value="CVT">CVT</option>
+                    </select>
+                </div>
+                
+                <div class="d-grid">
+                    <button class="btn btn-primary" onclick="filterCars()">Apply Filters</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Price Range</h5>
+            </div>
+            <div class="card-body">
+                <label for="price-range" class="form-label">Maximum Price: <span id="price-value">$50000</span></label>
+                <input type="range" class="form-range" id="price-range" min="10000" max="500000" step="10000" value="50000">
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-9">
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h5 class="mb-0">Available Cars</h5>
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="search-term" placeholder="Search cars...">
+                            <button class="btn btn-outline-secondary" type="button" id="search-button">
+                                <i class="bi bi-search"></i> Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for car in featured_cars %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 car-card" data-price="{{ car[4] }}" data-transmission="{{ car[6] }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ car[1] }} {{ car[2] }}</h5>
+                                <p class="card-text">
+                                    <strong>Price:</strong> ${{ car[4] }}<br>
+                                    <strong>Power:</strong> {{ car[5] }} BHP<br>
+                                    <strong>Top Speed:</strong> {{ car[6] }} km/h
+                                </p>
+                            </div>
+                            <div class="card-footer">
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ url_for('car_details', car_id=car[0]) }}" class="btn btn-sm btn-outline-primary">Details</a>
+                                    <a href="{{ url_for('book_car', car_id=car[0]) }}" class="btn btn-sm btn-primary">Book Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <nav aria-label="Car pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Car Details Modal -->
+<div class="modal fade" id="carDetailsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCarTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalCarSpecs"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="#" class="btn btn-primary" id="bookNowBtn">Book Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,261 @@
+<!-- templates/customer/payment.html -->
+{% extends 'base.html' %}
+
+{% block title %}Payment - Car Booking System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="mb-4">Complete Your Booking</h2>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Car Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h4>{{ car[2] }} {{ car[1] }}</h4>
+                        <p>
+                            <strong>Engine:</strong> {{ car[3] }}cc<br>
+                            <strong>Power:</strong> {{ car[4] }} BHP<br>
+                            <strong>Torque:</strong> {{ car[5] }}<br>
+                            <strong>Transmission:</strong> {{ car[6] }}<br>
+                            <strong>Top Speed:</strong> {{ car[7] }} km/h<br>
+                            <strong>Mileage:</strong> {{ car[8] }} km/l<br>
+                            <strong>Tank Capacity:</strong> {{ car[9] }} liters<br>
+                            <strong>Seats:</strong> {{ car[10] }}
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="h3 mb-4">${{ car[11] }}</div>
+                        <div class="badge bg-success mb-2">Available for Booking</div>
+                        <p><small>Delivery in 90 days</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Payment Information</h5>
+            </div>
+            <div class="card-body">
+                <form id="payment-form" method="POST" action="{{ url_for('book_car', car_id=car[0]) }}">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="card-holder" class="form-label">Card Holder Name</label>
+                            <input type="text" class="form-control" id="card-holder" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="card-number" class="form-label">Card Number</label>
+                            <input type="text" class="form-control" id="card-number" placeholder="XXXX XXXX XXXX XXXX" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="card-expiry" class="form-label">Expiry Date</label>
+                            <input type="text" class="form-control" id="card-expiry" placeholder="MM/YY" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="card-cvv" class="form-label">CVV</label>
+                            <input type="text" class="form-control" id="card-cvv" placeholder="XXX" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="card-pin" class="form-label">PIN</label>
+                            <input type="password" class="form-control" id="card-pin" placeholder="XXXX" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="billing-address" class="form-label">Billing Address</label>
+                        <textarea class="form-control" id="billing-address" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms-check" required>
+                        <label class="form-check-label" for="terms-check">
+                            I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a>
+                        </label>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">Booking Summary</h6>
+                                <p class="mb-0">
+                                    <strong>Car:</strong> {{ car[2] }} {{ car[1] }}<br>
+                                    <strong>Booking Date:</strong> {{ current_date }}<br>
+                                    <strong>Expected Delivery:</strong> {{ delivery_date }}
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <p class="mb-1">Total Amount</p>
+                                <h4>${{ car[11] }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="payment-processing" class="d-none">
+                        <div class="d-flex justify-content-center mb-3">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Processing payment...</span>
+                            </div>
+                        </div>
+                        <p class="text-center">Processing your payment. Please wait...</p>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Confirm Payment</button>
+                        <a href="{{ url_for('car_details', car_id=car[0]) }}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Booking Details</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Booking Date:</strong> {{ current_date }}</p>
+                <p><strong>Expected Delivery:</strong> {{ delivery_date }}</p>
+                <p><strong>Price:</strong> ${{ car[11] }}</p>
+                <hr>
+                <h6>Booking Policy:</h6>
+                <ul>
+                    <li>Booking can be cancelled anytime before delivery</li>
+                    <li>No cancellation charges apply</li>
+                    <li>Delivery time is approximately 90 days</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Need Help?</h5>
+            </div>
+            <div class="card-body">
+                <p>If you have any questions about your booking, please contact our customer support:</p>
+                <p><strong>Email:</strong> support@carbooking.com</p>
+                <p><strong>Phone:</strong> +1-800-CAR-BOOK</p>
+                <p><strong>Hours:</strong> 24/7 Customer Support</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Booking Terms</h6>
+                <p>By booking a car through our system, you agree to the following terms:</p>
+                <ul>
+                    <li>The car will be delivered approximately 90 days from the booking date</li>
+                    <li>The full amount is charged at the time of booking</li>
+                    <li>You must be at least 18 years old to book a car</li>
+                    <li>You must possess a valid driver's license to drive the car</li>
+                </ul>
+                
+                <h6>2. Cancellation Policy</h6>
+                <p>You may cancel your booking at any time before delivery with no cancellation fee.</p>
+                
+                <h6>3. Payment Information</h6>
+                <p>We use secure payment processing. Your payment information is encrypted and never stored on our servers.</p>
+                
+                <h6>4. Privacy Policy</h6>
+                <p>We respect your privacy and will only use your personal information for booking-related communications.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentForm = document.getElementById('payment-form');
+        
+        paymentForm.addEventListener('submit', function(e) {
+            const cardNumber = document.getElementById('card-number').value;
+            const cardCvv = document.getElementById('card-cvv').value;
+            const cardExpiry = document.getElementById('card-expiry').value;
+            const cardPin = document.getElementById('card-pin').value;
+            
+            let isValid = true;
+            
+            // Simple validation
+            if (!/^\d{16}$/.test(cardNumber.replace(/\s/g, ''))) {
+                showError('card-number', 'Please enter a valid 16-digit card number');
+                isValid = false;
+            } else {
+                clearError('card-number');
+            }
+            
+            if (!/^\d{3,4}$/.test(cardCvv)) {
+                showError('card-cvv', 'Please enter a valid CVV code');
+                isValid = false;
+            } else {
+                clearError('card-cvv');
+            }
+            
+            if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+                showError('card-expiry', 'Please enter a valid expiry date (MM/YY)');
+                isValid = false;
+            } else {
+                clearError('card-expiry');
+            }
+            
+            if (!/^\d{4}$/.test(cardPin)) {
+                showError('card-pin', 'Please enter a valid 4-digit PIN');
+                isValid = false;
+            } else {
+                clearError('card-pin');
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+            } else {
+                // Show loading indicator
+                document.getElementById('payment-processing').classList.remove('d-none');
+            }
+        });
+        
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            
+            field.classList.add('is-invalid');
+            if (errorElement) {
+                errorElement.textContent = message;
+            } else {
+                const div = document.createElement('div');
+                div.id = `${fieldId}-error`;
+                div.className = 'invalid-feedback';
+                div.textContent = message;
+                field.parentNode.appendChild(div);
+            }
+        }
+        
+        function clearError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorElement = document.getElementById(`${fieldId}-error`);
+            
+            field.classList.remove('is-invalid');
+            if (errorElement) {
+                errorElement.textContent = '';
+            }
+        }
+    });
+</script>
+{% endblock %}

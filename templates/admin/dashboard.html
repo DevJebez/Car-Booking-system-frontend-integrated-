@@ -1,0 +1,95 @@
+<!-- templates/admin/dashboard.html -->
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Car Booking System{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Admin Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Bookings</h5>
+                <p class="card-text">View and manage all customer bookings.</p>
+                <a href="{{ url_for('admin_bookings') }}" class="btn btn-primary">View Bookings</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Analytics</h5>
+                <p class="card-text">View booking trends and revenue analytics.</p>
+                <a href="{{ url_for('admin_analytics') }}" class="btn btn-primary">View Analytics</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Cancellations</h5>
+                <p class="card-text">View all booking cancellations.</p>
+                <a href="#" class="btn btn-primary">View Cancellations</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Recent Bookings
+            </div>
+            <div class="card-body">
+                <div id="recent-bookings-loading">Loading recent bookings...</div>
+                <div id="recent-bookings-content" class="d-none">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Car</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-bookings-table">
+                            <!-- Data will be loaded via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                System Overview
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Total Revenue</h5>
+                                <h3 id="total-revenue">$0</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light mb-3">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Active Bookings</h5>
+                                <h3 id="active-bookings">0</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

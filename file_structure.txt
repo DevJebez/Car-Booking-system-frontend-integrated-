@@ -1,0 +1,23 @@
+car_booking_system/
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── script.js
+├── templates/
+│   ├── base.html
+│   ├── index.html
+│   ├── login.html
+│   ├── register.html
+│   ├── admin/
+│   │   ├── dashboard.html
+│   │   ├── bookings.html
+│   │   └── analytics.html
+│   └── customer/
+│       ├── dashboard.html
+│       ├── car_selection.html
+│       ├── booking_history.html
+│       └── payment.html
+├── app.py
+├── main.py (existing)
+└── initialize_db.py (existing)

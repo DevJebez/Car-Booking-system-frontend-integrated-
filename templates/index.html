@@ -1,0 +1,46 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="jumbotron p-5 bg-light rounded">
+    <h1 class="display-4">Welcome to Car Booking System</h1>
+    <p class="lead">Book your dream car with just a few clicks!</p>
+    <hr class="my-4">
+    <p>We offer a wide range of luxury and economy cars for your needs.</p>
+    <div class="d-flex gap-2">
+        {% if not session.get('user_id') and not session.get('admin') %}
+        <a class="btn btn-primary btn-lg" href="{{ url_for('login') }}">Login</a>
+        <a class="btn btn-secondary btn-lg" href="{{ url_for('register') }}">Register</a>
+        {% elif session.get('user_id') %}
+        <a class="btn btn-primary btn-lg" href="{{ url_for('car_selection') }}">Browse Cars</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Luxury Cars</h5>
+                <p class="card-text">Experience the ultimate luxury with our premium collection.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Sports Cars</h5>
+                <p class="card-text">Feel the adrenaline with our high-performance sports cars.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Economy Cars</h5>
+                <p class="card-text">Practical and affordable options for everyday use.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

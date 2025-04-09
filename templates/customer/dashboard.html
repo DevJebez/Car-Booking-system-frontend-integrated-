@@ -1,0 +1,177 @@
+<!-- templates/customer/dashboard.html -->
+{% extends 'base.html' %}
+
+{% block title %}Customer Dashboard - Car Booking System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2>Welcome, {{ user_name }}</h2>
+        <p class="lead">Manage your car bookings and explore our collection</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Browse Cars</h5>
+                <p class="card-text">Explore our collection of luxury and economy cars.</p>
+                <a href="{{ url_for('car_selection') }}" class="btn btn-primary">View Cars</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">My Bookings</h5>
+                <p class="card-text">View your current and past car bookings.</p>
+                <a href="{{ url_for('booking_history') }}" class="btn btn-primary">View Bookings</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Account Settings</h5>
+                <p class="card-text">Update your profile and account information.</p>
+                <a href="#" class="btn btn-primary">Update Profile</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Featured Cars</h5>
+            </div>
+            <div class="card-body">
+                <div class="row" id="featured-cars">
+                    <!-- Featured cars will be loaded here -->
+                    <div class="col-md-12 text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Upcoming Delivery</h5>
+            </div>
+            <div class="card-body" id="upcoming-delivery">
+                <div class="text-center" id="delivery-loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="no-deliveries" class="d-none">
+                    <p class="text-muted">You have no upcoming deliveries.</p>
+                    <a href="{{ url_for('car_selection') }}" class="btn btn-sm btn-outline-primary">Book a Car</a>
+                </div>
+                <div id="delivery-info" class="d-none">
+                    <!-- Upcoming delivery info will be shown here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Special Offers</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info mb-0">
+                    <h6>Summer Sale!</h6>
+                    <p class="mb-2">Get 10% off on all luxury cars.</p>
+                    <p class="mb-0">Offer ends in: <span id="countdown-timer">3d 12h 45m 30s</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load featured cars
+        fetch('/api/featured-cars')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('featured-cars');
+                container.innerHTML = '';
+                
+                data.forEach(car => {
+                    container.innerHTML += `
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">${car.brand} ${car.model}</h5>
+                                    <p class="card-text">
+                                        <strong>Price:</strong> $${car.price}<br>
+                                        <strong>Power:</strong> ${car.bhp} BHP<br>
+                                        <strong>Top Speed:</strong> ${car.top_speed} km/h
+                                    </p>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="/car/${car.id}" class="btn btn-sm btn-primary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            })
+            .catch(error => {
+                console.error('Error loading featured cars:', error);
+                document.getElementById('featured-cars').innerHTML = '<p class="text-danger">Failed to load featured cars.</p>';
+            });
+        
+        // Load upcoming delivery
+        fetch('/api/upcoming-delivery')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('delivery-loading').classList.add('d-none');
+                
+                if (data.hasDelivery) {
+                    document.getElementById('delivery-info').classList.remove('d-none');
+                    document.getElementById('delivery-info').innerHTML = `
+                        <div class="text-center mb-3">
+                            <h6>${data.brand} ${data.model}</h6>
+                            <p class="mb-1">Delivery Date: ${data.delivery_date}</p>
+                            <p class="mb-0">Days Remaining: ${data.days_left}</p>
+                        </div>
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: ${data.progress}%"></div>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-sm btn-outline-danger" id="cancel-booking-btn" 
+                                    data-booking-id="${data.booking_id}">Cancel Booking</button>
+                        </div>
+                    `;
+                } else {
+                    document.getElementById('no-deliveries').classList.remove('d-none');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading delivery info:', error);
+                document.getElementById('delivery-loading').classList.add('d-none');
+                document.getElementById('no-deliveries').classList.remove('d-none');
+            });
+        
+        // Initialize countdown timer
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 3);
+        endDate.setHours(endDate.getHours() + 12);
+        endDate.setMinutes(endDate.getMinutes() + 45);
+        endDate.setSeconds(endDate.getSeconds() + 30);
+        
+        startCountdown(endDate, document.getElementById('countdown-timer'));
+    });
+</script>
+{% endblock %}

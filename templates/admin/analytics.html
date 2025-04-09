@@ -1,0 +1,160 @@
+<!-- templates/admin/analytics.html -->
+{% extends 'base.html' %}
+
+{% block title %}Admin Analytics - Car Booking System{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Analytics Dashboard</h2>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Revenue</h5>
+                <h2 class="display-4">${{ total_revenue }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total Bookings</h5>
+                <h2 class="display-4" id="total-bookings">0</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Cancellation Rate</h5>
+                <h2 class="display-4" id="cancellation-rate">0%</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Most Booked Car Models</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Brand</th>
+                            <th>Model</th>
+                            <th>Bookings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for brand, model, count in top_models %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ brand }}</td>
+                            <td>{{ model }}</td>
+                            <td>{{ count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Bookings by Brand</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="brandDistributionChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Monthly Booking Trends</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="bookingTrendsChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Brand Distribution Chart
+        const brandLabels = [{% for brand, count in brand_bookings %}'{{ brand }}',{% endfor %}];
+        const brandData = [{% for brand, count in brand_bookings %}{{ count }},{% endfor %}];
+        
+        new Chart(document.getElementById('brandDistributionChart'), {
+            type: 'pie',
+            data: {
+                labels: brandLabels,
+                datasets: [{
+                    data: brandData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)',
+                        'rgba(199, 199, 199, 0.7)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+        
+        // For demonstration, we'll create a mock monthly trend chart
+        // In a real application, this would use data from the server
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const mockData = [5, 8, 12, 15, 20, 18, 22, 25, 23, 28, 30, 35];
+        
+        new Chart(document.getElementById('bookingTrendsChart'), {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Number of Bookings',
+                    data: mockData,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    tension: 0.1,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Set the total bookings count
+        document.getElementById('total-bookings').textContent = mockData.reduce((a, b) => a + b, 0);
+        
+        // Set a mock cancellation rate
+        document.getElementById('cancellation-rate').textContent = '8%';
+    }
+    );
+</script>
+{% endblock %}
